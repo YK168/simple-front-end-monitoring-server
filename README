@@ -1,0 +1,13 @@
+```
+# 所需库
+go get -u gopkg.in/ini.v1
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/mysql
+go get -u github.com/gin-gonic/gin
+go get -u github.com/gin-contrib/sessions
+go get -u github.com/gin-contrib/sessions/cookie
+go get -u github.com/dgrijalva/jwt-go
+```
+token  
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibnVtYmVyIjoiMTExMTExMTExMTEiLCJwYXNzd2QiOiIxMTExMTEiLCJleHAiOjE2NTk3NzkyNzUsImlzcyI6InNpbXBsZS1mcm9udC1lbmQtbW9uaXRvcmluZy1zZXJ2ZXIifQ.NaIg03I7rziaZJI1jo6X_6b-XTWR9zpoJs62TzN2l1k
+
