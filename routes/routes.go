@@ -17,12 +17,15 @@ func NewRouter() *gin.Engine {
 		// 用户操作
 		v1.POST("user/register", api.UserRegister)
 		v1.POST("user/login", api.UserLogin)
+		// TODO: 创建项目
 	}
 	reporter := r.Group("api/reporter")
 	{
 		// 数据上报
 		reporter.POST("jserror", api.JsErrReport)
 		reporter.POST("apierror", api.ApiErrReport)
+		reporter.POST("sourceerror", api.SourceErrReport)
+		reporter.POST("performance", api.PerformanceReport)
 	}
 	return r
 }

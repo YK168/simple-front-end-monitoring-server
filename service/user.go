@@ -65,7 +65,7 @@ func (service *UserService) Login() utils.Response {
 		}
 	}
 	// 密码校验
-	if user.CheckPasswd(service.Passwd) == false {
+	if !user.CheckPasswd(service.Passwd) {
 		return utils.Response{
 			Status: http.StatusBadRequest,
 			Msg:    "密码错误",
