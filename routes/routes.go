@@ -21,6 +21,9 @@ func NewRouter() *gin.Engine {
 
 		// 创建项目，返回生成的project key
 		v1.POST("user/item", api.ProjectCreate)
+
+		// 删除项目
+		v1.DELETE("user/item", api.ProjectDelete)
 	}
 	reporter := r.Group("api/reporter")
 	{

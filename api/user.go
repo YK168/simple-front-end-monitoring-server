@@ -42,11 +42,22 @@ func UserLogin(c *gin.Context) {
 
 // 根据用户手机号码和项目名称创建对应项目key
 func ProjectCreate(c *gin.Context) {
+	// 获取token
+	token := c.Request.Header.Get("x-token")
+	claims, err := utils.ParseToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.Response{
+			Status: http.StatusInternalServerError,
+			Msg:    "jwt解析token失败",
+			Error:  err.Error(),
+		})
+		return
+	}
 	type Info struct {
-		Number      string `form:"number" json:"number" binding:"required,min=11,max=11"`
+		Number      string
 		ProjectName string `form:"project_name" json:"project_name" binding:"required"`
 	}
-	var info Info
+	var info Info = Info{Number: claims.Number}
 	if err := c.ShouldBind(&info); err == nil {
 		// TODO: 查询用户是否存在
 		log.Printf("正在生成用户%s的%s项目KEY...", info.Number, info.ProjectName)
@@ -82,4 +93,8 @@ func ProjectCreate(c *gin.Context) {
 			Msg:    "项目创建失败，解析json参数失败",
 		})
 	}
+}
+
+func ProjectDelete(c *gin.Context) {
+
 }
