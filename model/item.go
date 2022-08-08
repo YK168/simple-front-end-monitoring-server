@@ -8,7 +8,8 @@ type Item struct {
 	gorm.Model
 	Title      string
 	ProjectKey string `gorm:"index; not null"`
-	User       User   `gorm:"ForeignKey: ProjectKey"`
+	// 对应的用户号码
+	Number string `gorm:"index; not null"`
 }
 
 type JSError struct {

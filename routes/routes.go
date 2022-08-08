@@ -12,12 +12,15 @@ func NewRouter() *gin.Engine {
 	r := gin.Default()
 	store := cookie.NewStore([]byte("something-very-secret"))
 	r.Use(sessions.Sessions("mysession", store))
+	// 用户操作
 	v1 := r.Group("api/v1")
 	{
-		// 用户操作
+		// 注册登录
 		v1.POST("user/register", api.UserRegister)
 		v1.POST("user/login", api.UserLogin)
-		// TODO: 创建项目
+
+		// 创建项目，返回生成的project key
+		v1.POST("user/item", api.ProjectCreate)
 	}
 	reporter := r.Group("api/reporter")
 	{

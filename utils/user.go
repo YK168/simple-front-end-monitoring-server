@@ -1,6 +1,10 @@
 package utils
 
-import "simple_front_end_monitoring_server/model"
+import (
+	"crypto/md5"
+	"fmt"
+	"simple_front_end_monitoring_server/model"
+)
 
 type User struct {
 	ID       uint   `json:"id" form:"id" example:"1"`                   // 用户ID
@@ -15,4 +19,8 @@ func BuildUser(user model.User) User {
 		Number:   user.Number,
 		CreateAt: user.CreatedAt.Unix(),
 	}
+}
+
+func MD5(s string) string {
+	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
 }
