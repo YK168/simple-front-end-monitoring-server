@@ -29,6 +29,7 @@ func Init() {
 	dsn := DBUser + ":" + DBPasswd + "@tcp(" + DBHost + ":" + DBPort + ")/" + DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	log.Println("正在连接数据库:", dsn)
 	model.Database(dsn)
+	log.SetFlags(log.Ldate | log.Llongfile | log.Ltime)
 }
 
 func loadServer(file *ini.File) {

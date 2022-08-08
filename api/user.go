@@ -3,7 +3,6 @@ package api
 import (
 	"log"
 	"net/http"
-	"simple_front_end_monitoring_server/model"
 	"simple_front_end_monitoring_server/service"
 	"simple_front_end_monitoring_server/utils"
 
@@ -44,6 +43,7 @@ func UserLogin(c *gin.Context) {
 func ProjectCreate(c *gin.Context) {
 	// 获取token
 	token := c.Request.Header.Get("x-token")
+	// 根据token获取用户信息
 	claims, err := utils.ParseToken(token)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.Response{
@@ -53,48 +53,43 @@ func ProjectCreate(c *gin.Context) {
 		})
 		return
 	}
-	type Info struct {
-		Number      string
-		ProjectName string `form:"project_name" json:"project_name" binding:"required"`
-	}
-	var info Info = Info{Number: claims.Number}
-	if err := c.ShouldBind(&info); err == nil {
-		// TODO: 查询用户是否存在
-		log.Printf("正在生成用户%s的%s项目KEY...", info.Number, info.ProjectName)
-		key := utils.MD5(info.Number + info.ProjectName)
-		log.Printf("用户%s的%s项目KEY: %s\n", info.Number, info.ProjectName, key)
-		// 添加item表记录
-		var item model.Item = model.Item{
-			Title:      info.ProjectName,
-			ProjectKey: key,
-			Number:     info.Number,
-		}
-		err := model.DB.Create(&item).Error
-		if err != nil {
-			log.Printf("数据库添加用户%s的%s项目记录失败\n", info.Number, info.ProjectName)
-			log.Println("err:", err)
-			c.JSON(http.StatusOK, utils.Response{
-				Status: http.StatusOK,
-				Msg:    "数据库添加Item记录失败",
-				Data:   key,
-			})
-			return
-		}
-		c.JSON(http.StatusOK, utils.Response{
-			Status: http.StatusOK,
-			Msg:    "项目创建成功",
-			Data:   key,
-		})
+
+	// 创建项目逻辑
+	var project = service.ProjectService{Number: claims.Number}
+	// 这里的project只绑定了Title
+	if err := c.ShouldBind(&project); err == nil {
+		// TODO: 验证用户是否存在
+
+		log.Printf("正在生成用户%s的%s项目KEY...", project.Number, project.Title)
+		key := utils.MD5(project.Number + project.Title)
+		project.ProjectKey = key
+		log.Printf("用户%s的%s项目KEY: %s\n", project.Number, project.Title, project.ProjectKey)
+
+		res := project.Create()
+		c.JSON(res.Status, res)
 	} else {
-		log.Println("项目创建失败，解析json参数失败")
-		log.Printf("number = <%s>, project name = <%s>\n", info.Number, info.ProjectName)
+		log.Println("项目创建失败，解析json参数失败，err:", err)
+		log.Printf("number = %s\n", project.Number)
 		c.JSON(http.StatusBadRequest, utils.Response{
 			Status: http.StatusBadRequest,
 			Msg:    "项目创建失败，解析json参数失败",
+			Error:  err.Error(),
 		})
 	}
 }
 
 func ProjectDelete(c *gin.Context) {
-
+	var project service.ProjectService
+	if err := c.ShouldBind(&project); err == nil {
+		res := project.Delete()
+		c.JSON(res.Status, res)
+	} else {
+		log.Println("项目删除失败，解析json参数失败，err:", err)
+		log.Printf("project_key = %s\n", project.ProjectKey)
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "项目删除失败，解析json参数失败",
+			Error:  err.Error(),
+		})
+	}
 }
