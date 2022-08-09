@@ -8,91 +8,91 @@ import (
 
 type JsErrorService struct {
 	// 项目名称
-	Title string `form:"title" json:"title" binding:"required"`
+	Title string `form:"title" json:"title"`
 	// 错误信息
-	Message string `form:"message" json:"message" binding:"required"`
+	Message string `form:"message" json:"message"`
 	// 报错时路由地址
-	URL string `form:"url" json:"url" binding:"required"`
+	URL string `form:"url" json:"url"`
 	// 报错代码行数
-	Position string `form:"position" json:"position" binding:"required"`
+	Position string `form:"position" json:"position"`
 	// 报错文件
-	FileName string `form:"file_name" json:"file_name" binding:"required"`
+	FileName string `form:"filename" json:"filename"`
 	// JsError or PromiseError
-	ErrType string `form:"err_type" json:"err_type" binding:"required"`
+	ErrType string `form:"errType" json:"errType"`
 	// 报错时间
-	TimeStamp int64 `form:"time_stamp" json:"time_stamp" binding:"required"`
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
 	// 根据Cookie来区分不同页面？
-	Cookie     string `form:"cookie" json:"cookie" binding:"required"`
-	ProjectKey string `form:"project_key" json:"project_key" binding:"required"`
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
 type ApiErrorService struct {
 	// 根据Cookie来区分不同页面？
 	Cookie     string `form:"cookie" json:"cookie"`
-	ProjectKey string `form:"projectKey" json:"projectKey" binding:"required"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
 	// 报错时间
-	TimeStamp int64 `form:"timestamp" json:"timestamp" binding:"required"`
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
 	// 项目名称
-	Title string `form:"title" json:"title" binding:"required"`
+	Title string `form:"title" json:"title"`
 	// 报错时路由地址
-	URL     string `form:"url" json:"url" binding:"required"`
-	XhrInfo Xhr    `form:"xhr" json:"xhr" binding:"required"`
+	URL     string `form:"url" json:"url"`
+	XhrInfo Xhr    `form:"xhr" json:"xhr"`
 }
 
 type Xhr struct {
 	// API请求耗时
-	Duration int `form:"duration" json:"duration" binding:"required"`
+	Duration int `form:"duration" json:"duration"`
 	// API请求结果类型
-	EventType string `form:"eventType" json:"eventType" binding:"required"`
+	EventType string `form:"eventType" json:"eventType"`
 
-	Kind string `form:"kind" json:"kind" binding:"required"`
+	Kind string `form:"kind" json:"kind"`
 	// POST请求的参数
 	Params string `form:"params" json:"params"`
 	// API请求的地址，GET请求参数加在后面
-	Pathname string `form:"pathname" json:"pathname" binding:"required"`
+	Pathname string `form:"pathname" json:"pathname"`
 	Response string `form:"response" json:"response"`
 	// API请求的状态
-	Status string `form:"status" json:"status" binding:"required"`
+	Status string `form:"status" json:"status"`
 	// 什么类型的API请求工具
-	ReqType string `form:"type" json:"type" binding:"required"`
+	ReqType string `form:"type" json:"type"`
 }
 
 type SourceErrorService struct {
 	// 项目名称
-	Title string `form:"title" json:"title" binding:"required"`
+	Title string `form:"title" json:"title"`
 	// 报错时路由地址
-	URL string `form:"url" json:"url" binding:"required"`
+	URL string `form:"url" json:"url"`
 	// 报错文件
-	FileName string `form:"file_name" json:"file_name" binding:"required"`
+	FileName string `form:"filename" json:"filename"`
 	// 报错资源标签
-	TagName string `form:"tag_name" json:"tag_name" binding:"required"`
+	TagName string `form:"tagName" json:"tagName"`
 	// JsError or PromiseError
-	ErrType string `form:"err_type" json:"err_type" binding:"required"`
+	ErrType string `form:"errType" json:"errType"`
 	// 报错时间
-	TimeStamp int64 `form:"time_stamp" json:"time_stamp" binding:"required"`
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
 	// 根据Cookie来区分不同页面？
-	Cookie     string `form:"cookie" json:"cookie" binding:"required"`
-	ProjectKey string `form:"project_key" json:"project_key" binding:"required"`
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
 type PerformanceService struct {
 	// 项目名称
-	Title        string  `form:"title" json:"title" binding:"required"`
-	AnalysisTime float32 `form:"analysis_time" json:"analysis_time"`
-	AppcacheTime float32 `form:"appcache_time" json:"appcache_time"`
-	BlankTime    float32 `form:"blank_time" json:"blank_time"`
-	DomReadyTime float32 `form:"dom_ready_time" json:"dom_ready_time"`
-	LoadPageTime float32 `form:"load_page_time" json:"load_page_time"`
-	RedirectTime float32 `form:"redirect_time" json:"redirect_time"`
-	ReqTime      float32 `form:"req_time" json:"req_time"`
-	TcpTime      float32 `form:"tcp_time" json:"tcp_time"`
-	TtfbTime     float32 `form:"ttfb_time" json:"ttfb_time"`
-	UnloadTim    float32 `form:"upload_time" json:"upload_time"`
+	Title        string  `form:"title" json:"title"`
+	AnalysisTime float32 `form:"analysisTime" json:"analysisTime"`
+	AppcacheTime float32 `form:"appcacheTime" json:"appcacheTime"`
+	BlankTime    float32 `form:"blankTime" json:"blankTime"`
+	DomReadyTime float32 `form:"domReadyTime" json:"domReadyTime"`
+	LoadPageTime float32 `form:"loadPageTime" json:"loadPageTime"`
+	RedirectTime float32 `form:"redirectTime" json:"redirectTime"`
+	ReqTime      float32 `form:"reqTime" json:"reqTime"`
+	TcpTime      float32 `form:"tcpTime" json:"tcpTime"`
+	TtfbTime     float32 `form:"ttfbTime" json:"ttfbTime"`
+	UnloadTim    float32 `form:"uploadTime" json:"uploadTime"`
 	// 报错时间
-	TimeStamp int64 `form:"time_stamp" json:"time_stamp" binding:"required"`
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
 	// 根据Cookie来区分不同页面？
-	Cookie     string `form:"cookie" json:"cookie" binding:"required"`
-	ProjectKey string `form:"project_key" json:"project_key" binding:"required"`
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
 func (service *JsErrorService) Report() utils.Response {
