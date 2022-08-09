@@ -37,21 +37,27 @@ type APIError struct {
 	gorm.Model
 	// 项目名称
 	Title string
-	// 错误信息
-	Message string
 	// 报错时路由地址
 	URL string
-	// 报错代码行数
-	Position string
-	// 报错文件
-	FileName string
-	// JsError or PromiseError
-	ErrType string
 	// 报错时间
 	TimeStamp int64
 	// 根据Cookie来区分不同页面？
 	Cookie     string
 	ProjectKey string `gorm:"index; not null"`
+	// API请求耗时
+	Duration int
+	// API请求结果类型
+	EventType string
+	Kind      string
+	// POST请求的参数
+	Params string
+	// API请求的地址，GET请求参数加在后面
+	Pathname string
+	Response string
+	// API请求的状态
+	Status string
+	// 什么类型的API请求工具
+	ReqType string
 }
 
 type SourceError struct {

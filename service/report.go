@@ -27,23 +27,34 @@ type JsErrorService struct {
 }
 
 type ApiErrorService struct {
+	// 根据Cookie来区分不同页面？
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey" binding:"required"`
+	// 报错时间
+	TimeStamp int64 `form:"timestamp" json:"timestamp" binding:"required"`
 	// 项目名称
 	Title string `form:"title" json:"title" binding:"required"`
-	// 错误信息
-	Message string `form:"message" json:"message" binding:"required"`
 	// 报错时路由地址
-	URL string `form:"url" json:"url" binding:"required"`
-	// 报错代码行数
-	Position string `form:"position" json:"position" binding:"required"`
-	// 报错文件
-	FileName string `form:"file_name" json:"file_name" binding:"required"`
-	// JsError or PromiseError
-	ErrType string `form:"err_type" json:"err_type" binding:"required"`
-	// 报错时间
-	TimeStamp int64 `form:"time_stamp" json:"time_stamp" binding:"required"`
-	// 根据Cookie来区分不同页面？
-	Cookie     string `form:"cookie" json:"cookie" binding:"required"`
-	ProjectKey string `form:"project_key" json:"project_key" binding:"required"`
+	URL     string `form:"url" json:"url" binding:"required"`
+	XhrInfo Xhr    `form:"xhr" json:"xhr" binding:"required"`
+}
+
+type Xhr struct {
+	// API请求耗时
+	Duration int `form:"duration" json:"duration" binding:"required"`
+	// API请求结果类型
+	EventType string `form:"eventType" json:"eventType" binding:"required"`
+
+	Kind string `form:"kind" json:"kind" binding:"required"`
+	// POST请求的参数
+	Params string `form:"params" json:"params"`
+	// API请求的地址，GET请求参数加在后面
+	Pathname string `form:"pathname" json:"pathname" binding:"required"`
+	Response string `form:"response" json:"response"`
+	// API请求的状态
+	Status string `form:"status" json:"status" binding:"required"`
+	// 什么类型的API请求工具
+	ReqType string `form:"type" json:"type" binding:"required"`
 }
 
 type SourceErrorService struct {
@@ -112,14 +123,18 @@ func (service *JsErrorService) Report() utils.Response {
 func (service *ApiErrorService) Report() utils.Response {
 	apiErr := model.APIError{
 		Title:      service.Title,
-		Message:    service.Message,
 		URL:        service.URL,
-		Position:   service.Position,
-		FileName:   service.FileName,
-		ErrType:    service.ErrType,
 		TimeStamp:  service.TimeStamp,
 		Cookie:     service.Cookie,
 		ProjectKey: service.ProjectKey,
+		Duration:   service.XhrInfo.Duration,
+		EventType:  service.XhrInfo.EventType,
+		Kind:       service.XhrInfo.Kind,
+		Params:     service.XhrInfo.Params,
+		Pathname:   service.XhrInfo.Pathname,
+		Response:   service.XhrInfo.Response,
+		Status:     service.XhrInfo.Status,
+		ReqType:    service.XhrInfo.ReqType,
 	}
 	err := model.DB.Create(&apiErr).Error
 	if err != nil {
