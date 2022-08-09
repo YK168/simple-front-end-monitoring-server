@@ -1,9 +1,13 @@
 package utils
 
 import (
+	"bytes"
+	"io/ioutil"
+	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 // JWT密钥
@@ -45,4 +49,14 @@ func ParseToken(token string) (*Claims, error) {
 		}
 	}
 	return nil, err
+}
+
+func GetQueryContent(c *gin.Context) string {
+	data, err := c.GetRawData()
+	if err != nil {
+		log.Println("获取请求body失败:", err.Error())
+	}
+	// 将读取出来的内容重新放回流中
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+	return c.Request.Method + " " + c.Request.URL.String() + " " + string(data)
 }

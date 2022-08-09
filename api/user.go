@@ -10,6 +10,8 @@ import (
 )
 
 func UserRegister(c *gin.Context) {
+	content := utils.GetQueryContent(c)
+	log.Println(content)
 	var userRegister service.UserService
 	if err := c.ShouldBind(&userRegister); err == nil {
 		res := userRegister.Register()

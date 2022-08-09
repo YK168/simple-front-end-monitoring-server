@@ -9,6 +9,9 @@ go get -u github.com/gin-contrib/sessions/cookie
 go get -u github.com/dgrijalva/jwt-go
 ```
 
-TODO List：
+TODO List
 1. PV UV计算
 2. 数据请求接口
+
+运行
+```nohup go run main.go > myout.file 2>&1 &```
