@@ -7,11 +7,14 @@ go get -u github.com/gin-gonic/gin
 go get -u github.com/gin-contrib/sessions
 go get -u github.com/gin-contrib/sessions/cookie
 go get -u github.com/dgrijalva/jwt-go
+go get -u github.com/gin-gonic/gin
+go get -u github.com/gin-contrib/cors
 ```
 
 TODO List
 1. PV UV计算
 2. 数据请求接口
+3. 跨域
 
 运行
 ```nohup go run main.go > myout.file 2>&1 &```
