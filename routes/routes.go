@@ -2,6 +2,7 @@ package routes
 
 import (
 	"simple_front_end_monitoring_server/api"
+	"simple_front_end_monitoring_server/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
@@ -22,11 +23,23 @@ func NewRouter() *gin.Engine {
 		v1.POST("user/register", api.UserRegister)
 		v1.POST("user/login", api.UserLogin)
 
-		// 创建项目，返回生成的project key
-		v1.POST("user/item", api.ProjectCreate)
-
-		// 删除项目
-		v1.DELETE("user/item", api.ProjectDelete)
+		authed := v1.Group("/") //需要登陆保护
+		// 设置JWT中间件
+		authed.Use(middleware.JWT)
+		{
+			// 创建项目，返回生成的project key
+			authed.POST("user/item", api.ProjectCreate)
+			// 删除项目
+			authed.DELETE("user/item", api.ProjectDelete)
+			// 修改项目，现在projectKey是根据md5(number + title)生成的
+			// 如果更新title，则projectKey需要重新生成
+			// 如果只更新title而不更新projectKet，会导致后续再有名叫title的项目生成时
+			// 新旧title的数据会混淆
+			// 涉及到projectKey和关联的监控数据，更新很复杂，暂时不实现
+			// authed.PUT("user/item", api.ProjectUpdate)
+			// 查询项目
+			authed.GET("user/item", api.ProjectSearch)
+		}
 	}
 	reporter := r.Group("api/reporter")
 	{
