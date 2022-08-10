@@ -95,6 +95,20 @@ type PerformanceService struct {
 	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
+type AccessService struct {
+	// 项目名称
+	Title string `form:"title" json:"title"`
+	// 报错时路由地址
+	URL string `form:"url" json:"url"`
+	// pv
+	ErrType string `form:"errType" json:"errType"`
+	// 报错时间
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
+	// 根据Cookie来区分不同页面？
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
+}
+
 func (service *JsErrorService) Report() utils.Response {
 	jsErr := model.JSError{
 		Title:      service.Title,
@@ -200,5 +214,27 @@ func (service *PerformanceService) Report() utils.Response {
 	return utils.Response{
 		Status: http.StatusOK,
 		Msg:    "Performance监控记录添加成功",
+	}
+}
+
+func (service *AccessService) Report() utils.Response {
+	access := model.Access{
+		Title:      service.Title,
+		URL:        service.URL,
+		ErrType:    service.ErrType,
+		TimeStamp:  service.TimeStamp,
+		Cookie:     service.Cookie,
+		ProjectKey: service.ProjectKey,
+	}
+	err := model.DB.Create(&access).Error
+	if err != nil {
+		return utils.Response{
+			Status: http.StatusInternalServerError,
+			Msg:    "数据库操作失败，添加PV/UV监控记录失败",
+		}
+	}
+	return utils.Response{
+		Status: http.StatusOK,
+		Msg:    "PV/UV监控记录添加成功",
 	}
 }

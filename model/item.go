@@ -99,3 +99,17 @@ type Performance struct {
 	Cookie     string
 	ProjectKey string `gorm:"index; not null"`
 }
+
+type Access struct {
+	// 项目名称
+	Title string
+	// 报错时路由地址
+	URL string
+	// pv
+	ErrType string
+	// 报错时间
+	TimeStamp int64
+	// 根据Cookie来区分不同页面？
+	Cookie     string
+	ProjectKey string `gorm:"index; not null"`
+}

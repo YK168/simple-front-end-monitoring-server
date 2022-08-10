@@ -35,6 +35,7 @@ func NewRouter() *gin.Engine {
 		reporter.POST("apierror", api.ApiErrReport)
 		reporter.POST("sourceerror", api.SourceErrReport)
 		reporter.POST("performance", api.PerformanceReport)
+		reporter.POST("access", api.AccessReport)
 	}
 	return r
 }

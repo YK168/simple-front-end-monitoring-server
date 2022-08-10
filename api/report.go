@@ -72,3 +72,19 @@ func PerformanceReport(c *gin.Context) {
 		})
 	}
 }
+
+// pv uv数据 上报
+func AccessReport(c *gin.Context) {
+	var access service.AccessService
+	if err := c.ShouldBind(&access); err == nil {
+		res := access.Report()
+		c.JSON(res.Status, res)
+	} else {
+		log.Println("解析json数据失败", err)
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "解析json数据失败",
+			Error:  err.Error(),
+		})
+	}
+}
