@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"simple_front_end_monitoring_server/utils"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -26,10 +27,35 @@ func JWT(c *gin.Context) {
 		}
 	}
 	if status != http.StatusOK {
-		c.JSON(status, gin.H{
-			"status": status,
-			"msg":    msg,
-			"data":   nil,
+		c.JSON(status, utils.Response{
+			Status: status,
+			Msg:    msg,
+		})
+		c.Abort()
+		return
+	}
+	c.Next()
+}
+
+// 解析资源GET请求时参数和格式是否正确
+func ParseURL(c *gin.Context) {
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	if projectKey == "" || startTime == "" || endTime == "" {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "projectKy或startTime或endTime参数为空",
+		})
+		c.Abort()
+		return
+	}
+	_, err1 := strconv.ParseInt(startTime, 10, 64)
+	_, err2 := strconv.ParseInt(endTime, 10, 64)
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "startTime或endTime参数格式不正确，非时间戳格式",
 		})
 		c.Abort()
 		return

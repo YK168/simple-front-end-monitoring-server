@@ -60,3 +60,18 @@ func GetQueryContent(c *gin.Context) string {
 	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 	return c.Request.Method + " " + c.Request.URL.String() + " " + string(data)
 }
+
+func GetBorder(s []int) (int, int) {
+	// 截取s切片头尾空元素
+	// r = len(s)，防止全0数组时，切片错误
+	l, r := 0, len(s)
+	for l < r-1 && (s[l] == 0 || s[r-1] == 0) {
+		if s[l] == 0 {
+			l++
+		}
+		if s[r-1] == 0 {
+			r--
+		}
+	}
+	return l, r
+}

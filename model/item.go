@@ -101,6 +101,7 @@ type Performance struct {
 }
 
 type Access struct {
+	gorm.Model
 	// 项目名称
 	Title string
 	// 报错时路由地址

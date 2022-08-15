@@ -50,5 +50,16 @@ func NewRouter() *gin.Engine {
 		reporter.POST("performance", api.PerformanceReport)
 		reporter.POST("access", api.AccessReport)
 	}
+	get := r.Group("api/get")
+	{
+		get.Use(middleware.ParseURL)
+
+		// 数据请求，返回用于echarts生成图表的x轴和y轴数组
+		get.GET("jserror", api.JsErrGet)
+		// get.GET("apierror", api.ApiErrGet)
+		// get.GET("sourceerror", api.SourceErrGet)
+		// get.GET("performance", api.PerformanceGet)
+		get.GET("access", api.AccessGet)
+	}
 	return r
 }
