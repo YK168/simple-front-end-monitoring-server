@@ -48,19 +48,11 @@ func ProjectCreate(c *gin.Context) {
 }
 
 func ProjectDelete(c *gin.Context) {
-	var project service.ProjectService
-	if err := c.ShouldBind(&project); err == nil {
-		res := project.Delete()
-		c.JSON(res.Status, res)
-	} else {
-		log.Println("项目删除失败，解析json参数失败，err:", err)
-		log.Printf("project_key = %s\n", project.ProjectKey)
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
-			Msg:    "项目删除失败，解析json参数失败",
-			Error:  err.Error(),
-		})
+	var project = service.ProjectService{
+		ProjectKey: c.Param("projectKey"),
 	}
+	res := project.Delete()
+	c.JSON(res.Status, res)
 }
 
 func ProjectSearch(c *gin.Context) {

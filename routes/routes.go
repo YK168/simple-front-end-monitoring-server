@@ -30,7 +30,7 @@ func NewRouter() *gin.Engine {
 			// 创建项目，返回生成的project key
 			authed.POST("user/item", api.ProjectCreate)
 			// 删除项目
-			authed.DELETE("user/item", api.ProjectDelete)
+			authed.DELETE("user/item/:projectKey", api.ProjectDelete)
 			// 修改项目，现在projectKey是根据md5(number + title)生成的
 			// 如果更新title，则projectKey需要重新生成
 			// 如果只更新title而不更新projectKet，会导致后续再有名叫title的项目生成时

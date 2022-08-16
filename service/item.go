@@ -47,6 +47,12 @@ func (service *ProjectService) Create() utils.Response {
 }
 
 func (service *ProjectService) Delete() utils.Response {
+	if service.ProjectKey == "" {
+		return utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "删除项目失败，projectKey为空",
+		}
+	}
 	err := model.DB.Model(&model.Item{}).Where("project_key = ?", service.ProjectKey).
 		Delete(&model.Item{}).Error
 	if err != nil {
