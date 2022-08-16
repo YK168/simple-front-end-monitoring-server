@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
+	"math/rand"
+	"simple_front_end_monitoring_server/model"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -74,4 +76,73 @@ func GetBorder(s []int) (int, int) {
 		}
 	}
 	return l, r
+}
+
+// 生成一些测试数据
+func GenerateTestData(number int, projectKey string, startT, endT int64) {
+	msg := "Uncaught ReferenceError: t is not defined"
+	filename := "webpack-internal:///./node_modules/test.js"
+	position := "378:13"
+	url := "http://localhost:8000/"
+	title := "测试数据"
+	gap := endT - startT
+	// 写1秒一条
+	for i := 0; i < number; i++ {
+		log.Printf("正在插入第%d条数据\n", i)
+		jsErr := model.JSError{
+			Title:      title,
+			ProjectKey: projectKey,
+			Message:    msg,
+			URL:        url,
+			Position:   position,
+			FileName:   filename,
+			TimeStamp:  startT + rand.Int63n(gap),
+			ErrType:    "jsError",
+		}
+		model.DB.Create(&jsErr)
+
+		model.DB.Model(&model.APIError{}).Create(&model.APIError{
+			Title:      title,
+			ProjectKey: projectKey,
+			URL:        url,
+			TimeStamp:  startT + rand.Int63n(gap),
+			Pathname:   "https://www.keyang1024.cloud/colors/test",
+			Status:     "200",
+			Duration:   rand.Intn(50) + 1,
+			EventType:  "error",
+			Kind:       "stability",
+			ReqType:    "xhr",
+		})
+		model.DB.Model(&model.SourceError{}).Create(&model.SourceError{
+			Title:      title,
+			URL:        url,
+			FileName:   filename,
+			TimeStamp:  startT + rand.Int63n(gap),
+			ProjectKey: projectKey,
+			ErrType:    "img",
+			TagName:    "img",
+		})
+		model.DB.Model(&model.Performance{}).Create(&model.Performance{
+			Title:        title,
+			TimeStamp:    startT + rand.Int63n(gap),
+			ProjectKey:   projectKey,
+			AnalysisTime: 1.0,
+			AppcacheTime: 2.0,
+			BlankTime:    3.0,
+			DomReadyTime: 4.0,
+			LoadPageTime: 5.0,
+			RedirectTime: 6.0,
+			ReqTime:      7.0,
+			TcpTime:      8.0,
+			TtfbTime:     9.0,
+			UnloadTim:    10.0,
+		})
+		model.DB.Model(&model.Access{}).Create(&model.Access{
+			Title:      title,
+			URL:        url,
+			TimeStamp:  startT + rand.Int63n(gap),
+			ProjectKey: projectKey,
+			ErrType:    "pv",
+		})
+	}
 }

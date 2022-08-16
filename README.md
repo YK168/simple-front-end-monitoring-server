@@ -20,9 +20,12 @@ go get -u github.com/gin-contrib/cors
 - [ ] Performance数据请求接口
 - [x] 资源GET请求参数解析中间件
 - [ ] 使用channel将上报逻辑改为异步批量插入数据库
+- [x] 生成测试数据脚本
 - [x] PV UV数据上报
 - [x] JWT中间件
 - [x] 项目请求接口
+
+[在线的时间戳转换工具](https://tool.lu/timestamp/)
 
 ### 创建数据库
 ```sql
