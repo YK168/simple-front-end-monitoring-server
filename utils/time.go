@@ -27,6 +27,7 @@ var (
 	}
 )
 
+// 判断是月区间还是天区间还是时区间
 func TimeInterval(gap int64) ([]string, []int, int64) {
 	if gap > MONTH {
 		return MONTHS, make([]int, len(MONTHS)), MONTH
@@ -36,7 +37,10 @@ func TimeInterval(gap int64) ([]string, []int, int64) {
 	return HOURS, make([]int, len(HOURS)), HOUR
 }
 
-// 获得timestamp当天00:00:00的时间戳，根据当前机器时区计算
+// 根据gap获得某天00:00:00的时间戳，
+// 或某个月第一天的时间戳，
+// 或某年第一个月的时间戳
+// 是根据当前机器时区计算的
 func GetZeroClock(timestamp, gap int64) int64 {
 	y, m, d := time.Unix(timestamp, 0).Date()
 	if gap > MONTH {
@@ -44,8 +48,6 @@ func GetZeroClock(timestamp, gap int64) int64 {
 	} else if gap > DAY {
 		d = 1
 	}
-	// fmt.Println(time.Date(y, m, d, 0, 0, 0, 0, time.Local).Unix())
-	// fmt.Println((timestamp/DAY)*DAY - (8 * HOUR))
 	// return (timestamp/DAY)*DAY - (8 * HOUR)	// 也能获取
 	return time.Date(y, m, d, 0, 0, 0, 0, time.Local).Unix()
 }
