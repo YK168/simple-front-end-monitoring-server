@@ -67,11 +67,11 @@ func GetBorder(s []int) (int, int) {
 	// 截取s切片头尾空元素
 	// r = len(s)，防止全0数组时，切片错误
 	l, r := 0, len(s)
-	for l < r-1 && (s[l] == 0 || s[r-1] == 0) {
+	for l < r && (s[l] == 0 || s[r-1] == 0) {
 		if s[l] == 0 {
 			l++
 		}
-		if s[r-1] == 0 {
+		if r != l && s[r-1] == 0 {
 			r--
 		}
 	}
@@ -89,11 +89,13 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 	// 写1秒一条
 	for i := 0; i < number; i++ {
 		log.Printf("正在插入第%d条数据\n", i)
+		ch := byte('a' + rand.Intn(26))
+		tUrl := url + string(ch)
 		jsErr := model.JSError{
 			Title:      title,
 			ProjectKey: projectKey,
 			Message:    msg,
-			URL:        url,
+			URL:        tUrl,
 			Position:   position,
 			FileName:   filename,
 			TimeStamp:  startT + rand.Int63n(gap),
@@ -104,7 +106,7 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 		model.DB.Model(&model.APIError{}).Create(&model.APIError{
 			Title:      title,
 			ProjectKey: projectKey,
-			URL:        url,
+			URL:        tUrl,
 			TimeStamp:  startT + rand.Int63n(gap),
 			Pathname:   "https://www.keyang1024.cloud/colors/test",
 			Status:     "200",
@@ -115,7 +117,7 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 		})
 		model.DB.Model(&model.SourceError{}).Create(&model.SourceError{
 			Title:      title,
-			URL:        url,
+			URL:        tUrl,
 			FileName:   filename,
 			TimeStamp:  startT + rand.Int63n(gap),
 			ProjectKey: projectKey,
@@ -139,7 +141,7 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 		})
 		model.DB.Model(&model.Access{}).Create(&model.Access{
 			Title:      title,
-			URL:        url,
+			URL:        tUrl,
 			TimeStamp:  startT + rand.Int63n(gap),
 			ProjectKey: projectKey,
 			ErrType:    "pv",
