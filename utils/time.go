@@ -51,3 +51,7 @@ func GetZeroClock(timestamp, gap int64) int64 {
 	// return (timestamp/DAY)*DAY - (8 * HOUR)	// 也能获取
 	return time.Date(y, m, d, 0, 0, 0, 0, time.Local).Unix()
 }
+
+func TimeStampToDate(timestamp int64) string {
+	return time.Unix(timestamp, 0).Format("2006-01-02")
+}

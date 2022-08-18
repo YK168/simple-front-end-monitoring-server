@@ -80,6 +80,58 @@ func JsErrTotal(c *gin.Context) {
 	})
 }
 
+func JsErrPage(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件Parse已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	path := c.Query("path")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.JSError
+	searcher.Search(&model.JSError{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "查询JsError数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	// 3. 数据处理
+	type Data struct {
+		Msg      string
+		Time     string
+		Position string
+	}
+	d := make([]Data, 0, len(data))
+	for i := 0; i < len(data); i++ {
+		u, err := url.Parse(data[i].URL)
+		if err != nil {
+			log.Println("AccessPage: 解析出错", err)
+			continue
+		}
+		if u.Path == path {
+			d = append(d, Data{
+				Msg:      data[i].Message,
+				Time:     utils.TimeStampToDate(data[i].TimeStamp),
+				Position: data[i].Position,
+			})
+		}
+	}
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "查询JsError数据成功",
+		Data:   d,
+	})
+}
+
 func AccessTotal(c *gin.Context) {
 	// 1. 解析校验参数
 	// 中间件ParseURL已经提前解析过参数了，所以这里的查询和转换并不会出错

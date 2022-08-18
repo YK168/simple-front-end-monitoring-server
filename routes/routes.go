@@ -61,7 +61,7 @@ func NewRouter() *gin.Engine {
 		// get.GET("sourceerror/total", api.SourceErrTotal)
 		// get.GET("performance/total", api.PerformanceTotal)
 
-		// get.GET("jserror/page", api.JsErrPage)
+		get.GET("jserror/page", api.JsErrPage)
 		get.GET("access/page", api.AccessPage)
 		// get.GET("apierror/page", api.ApiErrPage)
 		// get.GET("sourceerror/page", api.SourceErrPage)
