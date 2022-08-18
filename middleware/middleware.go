@@ -62,3 +62,16 @@ func ParseURL(c *gin.Context) {
 	}
 	c.Next()
 }
+
+func ParseURLMore(c *gin.Context) {
+	path := c.Query("path")
+	if path == "" {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "path为空，请检查",
+		})
+		c.Abort()
+		return
+	}
+	c.Next()
+}
