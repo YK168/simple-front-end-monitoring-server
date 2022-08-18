@@ -42,7 +42,7 @@ type ApiErrorService struct {
 type Xhr struct {
 	// API请求耗时
 	Duration int `form:"duration" json:"duration"`
-	// API请求结果类型
+	// API请求结果类型，error代表请求失败，load代表请求成功
 	EventType string `form:"eventType" json:"eventType"`
 
 	Kind string `form:"kind" json:"kind"`

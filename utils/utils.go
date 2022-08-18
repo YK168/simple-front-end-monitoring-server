@@ -78,6 +78,23 @@ func GetBorder(s []int) (int, int) {
 	return l, r
 }
 
+func Get2Border(s1, s2 []int) (int, int) {
+	if len(s1) != len(s2) {
+		log.Println("Get2Border: 长度不一致")
+		return 0, 0
+	}
+	l, r := 0, len(s1)
+	for l < r && ((s1[l] == 0 && s2[l] == 0) || (s1[r-1] == 0 && s2[r-1] == 0)) {
+		if s1[l] == 0 && s2[l] == 0 {
+			l++
+		}
+		if r != l && s1[r-1] == 0 && s2[r-1] == 0 {
+			r--
+		}
+	}
+	return l, r
+}
+
 // 生成一些测试数据
 func GenerateTestData(number int, projectKey string, startT, endT int64) {
 	msg := "Uncaught ReferenceError: t is not defined"
@@ -111,7 +128,7 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 			Pathname:   "https://www.keyang1024.cloud/colors/test",
 			Status:     "200",
 			Duration:   rand.Intn(50) + 1,
-			EventType:  "error",
+			EventType:  []string{"error", "load"}[rand.Intn(2)],
 			Kind:       "stability",
 			ReqType:    "xhr",
 		})

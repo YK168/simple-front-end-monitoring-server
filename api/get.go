@@ -16,18 +16,28 @@ import (
 type AccessData struct {
 	TotalPV int
 	TotalUV int
-	PVData  ChartData
-	UVData  ChartData
+	PVData  ChartData[int]
+	UVData  ChartData[int]
 }
 
 type JsErrData struct {
 	TotalErro int
-	Data      ChartData
+	Data      ChartData[int]
 }
 
-type ChartData struct {
+type ApiErrData struct {
+	SuccCnt  ChartData[int]
+	ErrCnt   ChartData[int]
+	SuccRate ChartData[float32]
+	// 请求错误数
+	ErrC int
+	// 请求错误率
+	ErrRate float32
+}
+
+type ChartData[T int | float32] struct {
 	X []string
-	Y []int
+	Y []T
 }
 
 func JsErrTotal(c *gin.Context) {
@@ -72,7 +82,7 @@ func JsErrTotal(c *gin.Context) {
 		Msg:    "查询JsError数据成功",
 		Data: JsErrData{
 			TotalErro: len(data),
-			Data: ChartData{
+			Data: ChartData[int]{
 				X: x[l:r],
 				Y: y[l:r],
 			},
@@ -191,11 +201,11 @@ func AccessTotal(c *gin.Context) {
 		Data: AccessData{
 			TotalPV: totalPV,
 			TotalUV: totalUV,
-			PVData: ChartData{
+			PVData: ChartData[int]{
 				X: x[l1:r1],
 				Y: yPV[l1:r1],
 			},
-			UVData: ChartData{
+			UVData: ChartData[int]{
 				X: x[l2:r2],
 				Y: yPV[l2:r2],
 			},
@@ -269,11 +279,11 @@ func AccessPage(c *gin.Context) {
 		Data: AccessData{
 			TotalPV: totalPV,
 			TotalUV: totalUV,
-			PVData: ChartData{
+			PVData: ChartData[int]{
 				X: x[l1:r1],
 				Y: yPV[l1:r1],
 			},
-			UVData: ChartData{
+			UVData: ChartData[int]{
 				X: x[l2:r2],
 				Y: yPV[l2:r2],
 			},
@@ -324,5 +334,85 @@ func AccessRank(c *gin.Context) {
 		Status: http.StatusOK,
 		Msg:    "查询AccessRank数据成功",
 		Data:   paths,
+	})
+}
+
+func ApiErrTotal(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件ParseURL已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.APIError
+	searcher.Search(&model.APIError{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "ApiErrTotal: 查询ApiErr数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	// 3. 数据处理
+	gap := searcher.EndTimeStamp - searcher.StartTimeStamp
+	x, ySuccReq, gap := utils.TimeInterval(gap)
+	yErrReq := make([]int, len(ySuccReq))
+	ySuccReqRate := make([]float32, len(ySuccReq))
+	var t1 int64 = utils.GetZeroClock(data[0].TimeStamp, gap)
+	var t2 int64 = t1 + gap
+	succC, errC := 0, 0
+	count := 0 // 计算在第几个时间区间
+	for i := 0; i < len(data); i++ {
+		// 将t2移动到有数据的区间
+		for data[i].TimeStamp > t2 {
+			t2 += gap
+			count++
+		}
+		if data[i].EventType == "load" {
+			ySuccReq[count]++
+			succC++
+		} else {
+			yErrReq[count]++
+			errC++
+		}
+	}
+	l, r := utils.Get2Border(ySuccReq, yErrReq)
+	x = x[l:r]
+	ySuccReq = ySuccReq[l:r]
+	yErrReq = yErrReq[l:r]
+	ySuccReqRate = ySuccReqRate[l:r]
+	for i := 0; i < len(ySuccReq); i++ {
+		if yErrReq[i] == 0 {
+			ySuccReqRate[i] = 1
+		} else {
+			ySuccReqRate[i] = float32(ySuccReq[i]) / float32(ySuccReq[i]+yErrReq[i])
+		}
+	}
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "查询ApiErr数据成功",
+		Data: ApiErrData{
+			SuccCnt: ChartData[int]{
+				X: x,
+				Y: ySuccReq,
+			},
+			ErrCnt: ChartData[int]{
+				X: x,
+				Y: yErrReq,
+			},
+			SuccRate: ChartData[float32]{
+				X: x,
+				Y: ySuccReqRate,
+			},
+			ErrC:    errC,
+			ErrRate: float32(errC) / float32(succC+errC),
+		},
 	})
 }

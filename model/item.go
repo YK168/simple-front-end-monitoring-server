@@ -46,7 +46,7 @@ type APIError struct {
 	ProjectKey string `gorm:"index; not null"`
 	// API请求耗时
 	Duration int
-	// API请求结果类型
+	// API请求结果类型，error代表请求失败，load代表请求成功
 	EventType string
 	Kind      string
 	// POST请求的参数

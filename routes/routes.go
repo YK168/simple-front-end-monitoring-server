@@ -57,7 +57,7 @@ func NewRouter() *gin.Engine {
 		// 数据请求，返回用于echarts生成图表的x轴和y轴数组
 		get.GET("jserror/total", api.JsErrTotal)
 		get.GET("access/total", api.AccessTotal)
-		// get.GET("apierror/total", api.ApiErrTotal)
+		get.GET("apierror/total", api.ApiErrTotal)
 		// get.GET("sourceerror/total", api.SourceErrTotal)
 		// get.GET("performance/total", api.PerformanceTotal)
 
