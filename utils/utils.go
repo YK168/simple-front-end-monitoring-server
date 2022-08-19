@@ -102,6 +102,7 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 	position := "378:13"
 	url := "http://localhost:8000/"
 	title := "测试数据"
+	cookies := []string{"userCookie1", "userCookie2", "userCookie3", ""}
 	gap := endT - startT
 	// 写1秒一条
 	for i := 0; i < number; i++ {
@@ -116,7 +117,8 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 			Position:   position,
 			FileName:   filename,
 			TimeStamp:  startT + rand.Int63n(gap),
-			ErrType:    "jsError",
+			ErrType:    []string{"jsError", "promiseError"}[rand.Intn(2)],
+			Cookie:     cookies[rand.Intn(len(cookies))],
 		}
 		model.DB.Create(&jsErr)
 
@@ -125,40 +127,54 @@ func GenerateTestData(number int, projectKey string, startT, endT int64) {
 			ProjectKey: projectKey,
 			URL:        tUrl,
 			TimeStamp:  startT + rand.Int63n(gap),
-			Pathname:   "https://www.keyang1024.cloud/colors/test",
-			Status:     "200",
-			Duration:   rand.Intn(50) + 1,
-			EventType:  []string{"error", "load"}[rand.Intn(2)],
-			Kind:       "stability",
-			ReqType:    "xhr",
+			Cookie:     cookies[rand.Intn(len(cookies))],
+			Params:     "POST请求参数",
+			Response:   "响应内容",
+			Pathname: []string{
+				"https://www.baidu.com/colors/test",
+				"https://www.taobao.cloud/colors/test",
+				"https://www.jd.cloud/colors/test",
+				"https://www.tengxun.cloud/colors/test",
+				"https://www.xiaomi.cloud/colors/test",
+			}[rand.Intn(5)],
+			Status:    []string{"200", "400", "500"}[rand.Intn(3)],
+			Duration:  rand.Intn(50) + 1,
+			EventType: []string{"error", "load"}[rand.Intn(2)],
+			Kind:      "stability",
+			ReqType:   "xhr",
 		})
 		model.DB.Model(&model.SourceError{}).Create(&model.SourceError{
 			Title:      title,
 			URL:        tUrl,
+			Cookie:     cookies[rand.Intn(len(cookies))],
 			FileName:   filename,
 			TimeStamp:  startT + rand.Int63n(gap),
 			ProjectKey: projectKey,
-			ErrType:    "img",
-			TagName:    "img",
+			ErrType:    "resourceError",
+			TagName:    "IMG",
 		})
 		model.DB.Model(&model.Performance{}).Create(&model.Performance{
 			Title:        title,
 			TimeStamp:    startT + rand.Int63n(gap),
 			ProjectKey:   projectKey,
-			AnalysisTime: 1.0,
-			AppcacheTime: 2.0,
-			BlankTime:    3.0,
-			DomReadyTime: 4.0,
-			LoadPageTime: 5.0,
-			RedirectTime: 6.0,
-			ReqTime:      7.0,
-			TcpTime:      8.0,
-			TtfbTime:     9.0,
-			UnloadTim:    10.0,
+			URL:          tUrl,
+			Cookie:       cookies[rand.Intn(len(cookies))],
+			AnalysisTime: rand.Float32() + float32(rand.Intn(10)),
+			AppcacheTime: rand.Float32() + float32(rand.Intn(10)),
+			BlankTime:    rand.Float32() + float32(rand.Intn(10)),
+			DnsTime:      rand.Float32() + float32(rand.Intn(10)),
+			DomReadyTime: rand.Float32() + float32(rand.Intn(10)),
+			LoadPageTime: rand.Float32() + float32(rand.Intn(10)),
+			RedirectTime: rand.Float32() + float32(rand.Intn(10)),
+			ReqTime:      rand.Float32() + float32(rand.Intn(10)),
+			TcpTime:      rand.Float32() + float32(rand.Intn(10)),
+			TtfbTime:     rand.Float32() + float32(rand.Intn(10)),
+			UnloadTim:    rand.Float32() + float32(rand.Intn(10)),
 		})
 		model.DB.Model(&model.Access{}).Create(&model.Access{
 			Title:      title,
 			URL:        tUrl,
+			Cookie:     cookies[rand.Intn(len(cookies))],
 			TimeStamp:  startT + rand.Int63n(gap),
 			ProjectKey: projectKey,
 			ErrType:    "pv",

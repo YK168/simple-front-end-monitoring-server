@@ -207,7 +207,7 @@ func AccessTotal(c *gin.Context) {
 			},
 			UVData: ChartData[int]{
 				X: x[l2:r2],
-				Y: yPV[l2:r2],
+				Y: yUV[l2:r2],
 			},
 		},
 	})
@@ -285,7 +285,7 @@ func AccessPage(c *gin.Context) {
 			},
 			UVData: ChartData[int]{
 				X: x[l2:r2],
-				Y: yPV[l2:r2],
+				Y: yUV[l2:r2],
 			},
 		},
 	})

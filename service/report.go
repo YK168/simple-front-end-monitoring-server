@@ -77,10 +77,22 @@ type SourceErrorService struct {
 
 type PerformanceService struct {
 	// 项目名称
-	Title        string  `form:"title" json:"title"`
+	Title string `form:"title" json:"title"`
+	// 上报数据所属URL
+	URL string `form:"url" json:"url"`
+	// 报错时间
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
+	// 根据Cookie来区分不同页面？
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
+	Times      Times  `form:"times" json:"times"`
+}
+
+type Times struct {
 	AnalysisTime float32 `form:"analysisTime" json:"analysisTime"`
 	AppcacheTime float32 `form:"appcacheTime" json:"appcacheTime"`
 	BlankTime    float32 `form:"blankTime" json:"blankTime"`
+	DnsTime      float32 `form:"dnsTime" json:"dnsTime"`
 	DomReadyTime float32 `form:"domReadyTime" json:"domReadyTime"`
 	LoadPageTime float32 `form:"loadPageTime" json:"loadPageTime"`
 	RedirectTime float32 `form:"redirectTime" json:"redirectTime"`
@@ -88,11 +100,6 @@ type PerformanceService struct {
 	TcpTime      float32 `form:"tcpTime" json:"tcpTime"`
 	TtfbTime     float32 `form:"ttfbTime" json:"ttfbTime"`
 	UnloadTim    float32 `form:"uploadTime" json:"uploadTime"`
-	// 报错时间
-	TimeStamp int64 `form:"timestamp" json:"timestamp"`
-	// 根据Cookie来区分不同页面？
-	Cookie     string `form:"cookie" json:"cookie"`
-	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
 type AccessService struct {
@@ -190,16 +197,18 @@ func (service *SourceErrorService) Report() utils.Response {
 func (service *PerformanceService) Report() utils.Response {
 	performance := model.Performance{
 		Title:        service.Title,
-		AnalysisTime: service.AnalysisTime,
-		AppcacheTime: service.AppcacheTime,
-		BlankTime:    service.BlankTime,
-		DomReadyTime: service.DomReadyTime,
-		LoadPageTime: service.LoadPageTime,
-		RedirectTime: service.RedirectTime,
-		ReqTime:      service.ReqTime,
-		TcpTime:      service.TcpTime,
-		TtfbTime:     service.TtfbTime,
-		UnloadTim:    service.UnloadTim,
+		AnalysisTime: service.Times.AnalysisTime,
+		AppcacheTime: service.Times.AppcacheTime,
+		BlankTime:    service.Times.BlankTime,
+		DnsTime:      service.Times.DnsTime,
+		DomReadyTime: service.Times.DomReadyTime,
+		LoadPageTime: service.Times.LoadPageTime,
+		RedirectTime: service.Times.RedirectTime,
+		ReqTime:      service.Times.ReqTime,
+		TcpTime:      service.Times.TcpTime,
+		TtfbTime:     service.Times.TtfbTime,
+		UnloadTim:    service.Times.UnloadTim,
+		URL:          service.URL,
 		TimeStamp:    service.TimeStamp,
 		Cookie:       service.Cookie,
 		ProjectKey:   service.ProjectKey,

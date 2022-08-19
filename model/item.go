@@ -87,12 +87,14 @@ type Performance struct {
 	AppcacheTime float32
 	BlankTime    float32
 	DomReadyTime float32
+	DnsTime      float32
 	LoadPageTime float32
 	RedirectTime float32
 	ReqTime      float32
 	TcpTime      float32
 	TtfbTime     float32
 	UnloadTim    float32
+	URL          string
 	// 报错时间
 	TimeStamp int64
 	// 根据Cookie来区分不同页面？
