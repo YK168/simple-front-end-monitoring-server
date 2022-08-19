@@ -1,3 +1,6 @@
+### 接口文档
+[接口文档](https://console-docs.apipost.cn/preview/95682135f76a1af1/9c0599f944e37b86)(还不完善)
+
 ### 所需库
 ```powershell
 go get -u gopkg.in/ini.v1
