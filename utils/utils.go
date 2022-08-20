@@ -63,7 +63,7 @@ func GetQueryContent(c *gin.Context) string {
 	return c.Request.Method + " " + c.Request.URL.String() + " " + string(data)
 }
 
-func GetBorder(s []int) (int, int) {
+func GetBorder[T int | float32](s []T) (int, int) {
 	// 截取s切片头尾空元素
 	// r = len(s)，防止全0数组时，切片错误
 	l, r := 0, len(s)

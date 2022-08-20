@@ -42,6 +42,23 @@ type SourceErrData struct {
 	TotalErr int
 }
 
+type PerformanceData struct {
+	// 首次渲染耗时，时间段内所有渲染时间的平均值
+	FirstRunderTime int
+	// 首屏时间
+	FMPTime ChartData[float32]
+	// 首次渲染耗时，时间区间划分
+	RunderTime ChartData[float32]
+	// 首次可交互时间
+	InteractableTime ChartData[float32]
+	// dom ready时间
+	DomReadyTime ChartData[float32]
+	// 页面完全加载时间
+	LoadCompleteTime ChartData[float32]
+	// 白屏时间
+	BlankTime ChartData[float32]
+}
+
 type Content struct {
 	TimeStamp int64
 	Duration  int
@@ -665,6 +682,192 @@ func SourceErrPage(c *gin.Context) {
 				Y: y,
 			},
 			TotalErr: errC,
+		},
+	})
+}
+
+func PerformanceTotal(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件ParseURL已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.Performance
+	searcher.Search(&model.Performance{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "PerformanceTotal: 查询Performance数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	// 3. 数据处理
+	gap := searcher.EndTimeStamp - searcher.StartTimeStamp
+	x, y, gap := utils.TimeInterval(gap)
+	yFMP := make([]float32, len(y))
+	yRunder := make([]float32, len(y))
+	yIntact := make([]float32, len(y))
+	yDom := make([]float32, len(y))
+	yLoad := make([]float32, len(y))
+	yBlank := make([]float32, len(y))
+	var fRunder float32
+	var t1 int64 = utils.GetZeroClock(data[0].TimeStamp, gap)
+	var t2 int64 = t1 + gap
+	count := 0 // 计算在第几个时间区间
+	for i := 0; i < len(data); i++ {
+		// 将t2移动到有数据的区间
+		for data[i].TimeStamp > t2 {
+			t2 += gap
+			count++
+		}
+		fRunder += data[i].AnalysisTime
+		yFMP[count] += data[i].AnalysisTime
+		yRunder[count] += data[i].AnalysisTime
+		yIntact[count] += data[i].LoadPageTime
+		yLoad[count] += data[i].LoadPageTime
+		yDom[count] += data[i].DomReadyTime
+		yBlank[count] += data[i].BlankTime
+	}
+	l1, r1 := utils.GetBorder(yFMP)
+	l2, r2 := utils.GetBorder(yRunder)
+	l3, r3 := utils.GetBorder(yIntact)
+	l4, r4 := utils.GetBorder(yLoad)
+	l5, r5 := utils.GetBorder(yDom)
+	l6, r6 := utils.GetBorder(yBlank)
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "PerformanceTotal: 查询Performance数据成功",
+		Data: PerformanceData{
+			FirstRunderTime: int(fRunder) / len(data),
+			FMPTime: ChartData[float32]{
+				X: x[l1:r1],
+				Y: yFMP[l1:r1],
+			},
+			RunderTime: ChartData[float32]{
+				X: x[l2:r2],
+				Y: yRunder[l2:r2],
+			},
+			DomReadyTime: ChartData[float32]{
+				X: x[l3:r3],
+				Y: yDom[l3:r3],
+			},
+			InteractableTime: ChartData[float32]{
+				X: x[l4:r4],
+				Y: yLoad[l4:r4],
+			},
+			LoadCompleteTime: ChartData[float32]{
+				X: x[l5:r5],
+				Y: yLoad[l5:r5],
+			},
+			BlankTime: ChartData[float32]{
+				X: x[l6:r6],
+				Y: yBlank[l6:r6],
+			},
+		},
+	})
+}
+
+func PerformancePage(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件ParseURL已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	path := c.Query("path")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.Performance
+	searcher.Search(&model.Performance{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "PerformancePage: 查询Performance数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	// 3. 数据处理
+	gap := searcher.EndTimeStamp - searcher.StartTimeStamp
+	x, y, gap := utils.TimeInterval(gap)
+	yFMP := make([]float32, len(y))
+	yRunder := make([]float32, len(y))
+	yIntact := make([]float32, len(y))
+	yDom := make([]float32, len(y))
+	yLoad := make([]float32, len(y))
+	yBlank := make([]float32, len(y))
+	var fRunder float32
+	var t1 int64 = utils.GetZeroClock(data[0].TimeStamp, gap)
+	var t2 int64 = t1 + gap
+	count := 0 // 计算在第几个时间区间
+	for i := 0; i < len(data); i++ {
+		// 将t2移动到有数据的区间
+		for data[i].TimeStamp > t2 {
+			t2 += gap
+			count++
+		}
+		u, err := url.Parse(data[i].URL)
+		if err != nil {
+			log.Println("PerformancePage: 解析出错", err)
+			continue
+		}
+		if u.Path == path {
+			fRunder += data[i].AnalysisTime
+			yFMP[count] += data[i].AnalysisTime
+			yRunder[count] += data[i].AnalysisTime
+			yIntact[count] += data[i].LoadPageTime
+			yLoad[count] += data[i].LoadPageTime
+			yDom[count] += data[i].DomReadyTime
+			yBlank[count] += data[i].BlankTime
+		}
+	}
+	l1, r1 := utils.GetBorder(yFMP)
+	l2, r2 := utils.GetBorder(yRunder)
+	l3, r3 := utils.GetBorder(yIntact)
+	l4, r4 := utils.GetBorder(yLoad)
+	l5, r5 := utils.GetBorder(yDom)
+	l6, r6 := utils.GetBorder(yBlank)
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "PerformancePage: 查询Performance数据成功",
+		Data: PerformanceData{
+			FirstRunderTime: int(fRunder) / len(data),
+			FMPTime: ChartData[float32]{
+				X: x[l1:r1],
+				Y: yFMP[l1:r1],
+			},
+			RunderTime: ChartData[float32]{
+				X: x[l2:r2],
+				Y: yRunder[l2:r2],
+			},
+			DomReadyTime: ChartData[float32]{
+				X: x[l3:r3],
+				Y: yDom[l3:r3],
+			},
+			InteractableTime: ChartData[float32]{
+				X: x[l4:r4],
+				Y: yLoad[l4:r4],
+			},
+			LoadCompleteTime: ChartData[float32]{
+				X: x[l5:r5],
+				Y: yLoad[l5:r5],
+			},
+			BlankTime: ChartData[float32]{
+				X: x[l6:r6],
+				Y: yBlank[l6:r6],
+			},
 		},
 	})
 }

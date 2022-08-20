@@ -62,7 +62,7 @@ func NewRouter() *gin.Engine {
 		get.GET("access/total", api.AccessTotal)
 		get.GET("apierror/total", api.ApiErrTotal)
 		get.GET("sourceerror/total", api.SourceErrTotal)
-		// get.GET("performance/total", api.PerformanceTotal)
+		get.GET("performance/total", api.PerformanceTotal)
 
 		// 该中间件用于检查url中是否携带path参数
 		get.Use(middleware.ParseURLMore)
@@ -71,7 +71,7 @@ func NewRouter() *gin.Engine {
 		get.GET("access/page", api.AccessPage)
 		get.GET("apierror/page", api.ApiErrPage)
 		get.GET("sourceerror/page", api.SourceErrPage)
-		// get.GET("performance/page", api.PerformancePage)
+		get.GET("performance/page", api.PerformancePage)
 	}
 	return r
 }
