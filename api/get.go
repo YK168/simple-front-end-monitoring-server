@@ -21,8 +21,8 @@ type AccessData struct {
 }
 
 type JsErrData struct {
-	TotalErro int
-	Data      ChartData[int]
+	TotalErr int
+	Data     ChartData[int]
 }
 
 type ApiErrData struct {
@@ -30,9 +30,15 @@ type ApiErrData struct {
 	ErrCnt   ChartData[int]
 	SuccRate ChartData[float32]
 	// 请求错误数
-	ErrC int
+	TotalErr int
 	// 请求错误率
-	ErrRate float32
+	TotalErrRate float32
+}
+
+type SourceErrData struct {
+	Data ChartData[int]
+	// 请求错误数
+	TotalErr int
 }
 
 type ChartData[T int | float32] struct {
@@ -81,7 +87,7 @@ func JsErrTotal(c *gin.Context) {
 		Status: http.StatusOK,
 		Msg:    "查询JsError数据成功",
 		Data: JsErrData{
-			TotalErro: len(data),
+			TotalErr: len(data),
 			Data: ChartData[int]{
 				X: x[l:r],
 				Y: y[l:r],
@@ -411,8 +417,8 @@ func ApiErrTotal(c *gin.Context) {
 				X: x,
 				Y: ySuccReqRate,
 			},
-			ErrC:    errC,
-			ErrRate: float32(errC) / float32(succC+errC),
+			TotalErr:     errC,
+			TotalErrRate: float32(errC) / float32(succC+errC),
 		},
 	})
 }
@@ -543,5 +549,100 @@ func ApiRank(c *gin.Context) {
 		Status: http.StatusOK,
 		Msg:    "查询AccessRank数据成功",
 		Data:   apis,
+	})
+}
+
+func SourceErrTotal(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件Parse已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.SourceError
+	searcher.Search(&model.SourceError{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "SourceErrTotal: 查询SourceErr数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "SourceErrTotal: 查询SourceErr数据成功",
+		Data: SourceErrData{
+			TotalErr: len(data),
+		},
+	})
+}
+
+func SourceErrPage(c *gin.Context) {
+	// 1. 解析校验参数
+	// 中间件Parse已经提前解析过参数了，所以这里的查询和转换并不会出错
+	projectKey := c.Query("projectKey")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	path := c.Query("path")
+	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
+	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 2. 查询数据
+	var searcher = &service.Searcher{
+		ProjectKey:     projectKey,
+		StartTimeStamp: startTimeStamp,
+		EndTimeStamp:   endTimeStamp,
+	}
+	var data []model.SourceError
+	searcher.Search(&model.SourceError{}, &data)
+	if len(data) == 0 {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "SourceErrPage: 查询SourceErr数据失败，该起始时间内没有数据",
+		})
+		return
+	}
+	// 3. 数据处理
+	gap := searcher.EndTimeStamp - searcher.StartTimeStamp
+	x, y, gap := utils.TimeInterval(gap)
+	var t1 int64 = utils.GetZeroClock(data[0].TimeStamp, gap)
+	var t2 int64 = t1 + gap
+	count := 0 // 计算在第几个时间区间
+	errC := 0
+	for i := 0; i < len(data); i++ {
+		// 将t2移动到有数据的区间
+		for data[i].TimeStamp > t2 {
+			t2 += gap
+			count++
+		}
+		u, err := url.Parse(data[i].URL)
+		if err != nil {
+			log.Println("SourceErrPage: 解析出错", err)
+			continue
+		}
+		if u.Path == path {
+			errC++
+			y[count]++
+		}
+	}
+	l, r := utils.GetBorder(y)
+	x = x[l:r]
+	y = y[l:r]
+	c.JSON(http.StatusOK, utils.Response{
+		Status: http.StatusOK,
+		Msg:    "SourceErrPage: 查询SourceErr数据成功",
+		Data: SourceErrData{
+			Data: ChartData[int]{
+				X: x,
+				Y: y,
+			},
+			TotalErr: errC,
+		},
 	})
 }
