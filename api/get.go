@@ -33,12 +33,21 @@ type ApiErrData struct {
 	TotalErr int
 	// 请求错误率
 	TotalErrRate float32
+	List         []Content
 }
 
 type SourceErrData struct {
 	Data ChartData[int]
 	// 请求错误数
 	TotalErr int
+}
+
+type Content struct {
+	TimeStamp int64
+	Duration  int
+	Api       string
+	Status    string
+	Msg       string
 }
 
 type ChartData[T int | float32] struct {
@@ -452,6 +461,8 @@ func ApiErrPage(c *gin.Context) {
 	x, ySuccReq, gap := utils.TimeInterval(gap)
 	yErrReq := make([]int, len(ySuccReq))
 	ySuccReqRate := make([]float32, len(ySuccReq))
+	// 存放页面的每一条报错信息
+	list := make([]Content, 0)
 	var t1 int64 = utils.GetZeroClock(data[0].TimeStamp, gap)
 	var t2 int64 = t1 + gap
 	count := 0 // 计算在第几个时间区间
@@ -467,11 +478,21 @@ func ApiErrPage(c *gin.Context) {
 			continue
 		}
 		if u.Hostname() == path {
+			c := Content{
+				TimeStamp: data[i].TimeStamp,
+				Duration:  data[i].Duration,
+				Api:       data[i].URL,
+				Status:    data[i].Status,
+				Msg:       data[i].EventType,
+			}
 			if data[i].EventType == "load" {
+				c.Msg = "请求成功"
 				ySuccReq[count]++
 			} else {
+				c.Msg = "请求失败"
 				yErrReq[count]++
 			}
+			list = append(list, c)
 		}
 	}
 	l, r := utils.Get2Border(ySuccReq, yErrReq)
@@ -502,6 +523,7 @@ func ApiErrPage(c *gin.Context) {
 				X: x,
 				Y: ySuccReqRate,
 			},
+			List: list,
 		},
 	})
 }
