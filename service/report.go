@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"simple_front_end_monitoring_server/model"
 	"simple_front_end_monitoring_server/utils"
+	"strconv"
 )
 
 type JsErrorService struct {
@@ -89,17 +90,17 @@ type PerformanceService struct {
 }
 
 type Times struct {
-	AnalysisTime float32 `form:"analysisTime" json:"analysisTime"`
-	AppcacheTime float32 `form:"appcacheTime" json:"appcacheTime"`
-	BlankTime    float32 `form:"blankTime" json:"blankTime"`
-	DnsTime      float32 `form:"dnsTime" json:"dnsTime"`
-	DomReadyTime float32 `form:"domReadyTime" json:"domReadyTime"`
-	LoadPageTime float32 `form:"loadPageTime" json:"loadPageTime"`
-	RedirectTime float32 `form:"redirectTime" json:"redirectTime"`
-	ReqTime      float32 `form:"reqTime" json:"reqTime"`
-	TcpTime      float32 `form:"tcpTime" json:"tcpTime"`
-	TtfbTime     float32 `form:"ttfbTime" json:"ttfbTime"`
-	UnloadTim    float32 `form:"uploadTime" json:"uploadTime"`
+	AnalysisTime string `form:"analysisTime" json:"analysisTime"`
+	AppcacheTime string `form:"appcacheTime" json:"appcacheTime"`
+	BlankTime    string `form:"blankTime" json:"blankTime"`
+	DnsTime      string `form:"dnsTime" json:"dnsTime"`
+	DomReadyTime string `form:"domReadyTime" json:"domReadyTime"`
+	LoadPageTime string `form:"loadPageTime" json:"loadPageTime"`
+	RedirectTime string `form:"redirectTime" json:"redirectTime"`
+	ReqTime      string `form:"reqTime" json:"reqTime"`
+	TcpTime      string `form:"tcpTime" json:"tcpTime"`
+	TtfbTime     string `form:"ttfbTime" json:"ttfbTime"`
+	UnloadTim    string `form:"uploadTime" json:"uploadTime"`
 }
 
 type AccessService struct {
@@ -195,19 +196,31 @@ func (service *SourceErrorService) Report() utils.Response {
 }
 
 func (service *PerformanceService) Report() utils.Response {
+	// 前端保证数据合法性
+	analysisTime, _ := strconv.ParseFloat(service.Times.AnalysisTime, 32)
+	appcacheTime, _ := strconv.ParseFloat(service.Times.AppcacheTime, 32)
+	blankTime, _ := strconv.ParseFloat(service.Times.BlankTime, 32)
+	dnsTime, _ := strconv.ParseFloat(service.Times.DnsTime, 32)
+	domReadyTime, _ := strconv.ParseFloat(service.Times.DomReadyTime, 32)
+	loadPageTime, _ := strconv.ParseFloat(service.Times.LoadPageTime, 32)
+	redirectTime, _ := strconv.ParseFloat(service.Times.RedirectTime, 32)
+	reqTime, _ := strconv.ParseFloat(service.Times.ReqTime, 32)
+	tcpTime, _ := strconv.ParseFloat(service.Times.TcpTime, 32)
+	ttfbTime, _ := strconv.ParseFloat(service.Times.TtfbTime, 32)
+	unloadTim, _ := strconv.ParseFloat(service.Times.UnloadTim, 32)
 	performance := model.Performance{
 		Title:        service.Title,
-		AnalysisTime: service.Times.AnalysisTime,
-		AppcacheTime: service.Times.AppcacheTime,
-		BlankTime:    service.Times.BlankTime,
-		DnsTime:      service.Times.DnsTime,
-		DomReadyTime: service.Times.DomReadyTime,
-		LoadPageTime: service.Times.LoadPageTime,
-		RedirectTime: service.Times.RedirectTime,
-		ReqTime:      service.Times.ReqTime,
-		TcpTime:      service.Times.TcpTime,
-		TtfbTime:     service.Times.TtfbTime,
-		UnloadTim:    service.Times.UnloadTim,
+		AnalysisTime: float32(analysisTime),
+		AppcacheTime: float32(appcacheTime),
+		BlankTime:    float32(blankTime),
+		DnsTime:      float32(dnsTime),
+		DomReadyTime: float32(domReadyTime),
+		LoadPageTime: float32(loadPageTime),
+		RedirectTime: float32(redirectTime),
+		ReqTime:      float32(reqTime),
+		TcpTime:      float32(tcpTime),
+		TtfbTime:     float32(ttfbTime),
+		UnloadTim:    float32(unloadTim),
 		URL:          service.URL,
 		TimeStamp:    service.TimeStamp,
 		Cookie:       service.Cookie,
