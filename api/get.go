@@ -1,9 +1,7 @@
 package api
 
 import (
-	"log"
 	"net/http"
-	"net/url"
 	"simple_front_end_monitoring_server/model"
 	"simple_front_end_monitoring_server/service"
 	"simple_front_end_monitoring_server/utils"
@@ -155,12 +153,7 @@ func JsErrPage(c *gin.Context) {
 	}
 	d := make([]Data, 0, len(data))
 	for i := 0; i < len(data); i++ {
-		u, err := url.Parse(data[i].URL)
-		if err != nil {
-			log.Println("AccessPage: 解析出错", err)
-			continue
-		}
-		if u.Path == path {
+		if data[i].URL == path {
 			d = append(d, Data{
 				Msg:      data[i].Message,
 				Time:     utils.TimeStampToDate(data[i].TimeStamp),
@@ -287,12 +280,7 @@ func AccessPage(c *gin.Context) {
 			tUV = totalUV
 			count++
 		}
-		u, err := url.Parse(data[i].URL)
-		if err != nil {
-			log.Println("AccessPage: 解析出错", err)
-			continue
-		}
-		if u.Path == path {
+		if data[i].URL == path {
 			totalPV++
 			// 根据Cookie来区分不同用户，没有Cookie的记录认为是两个不同用户
 			if data[i].Cookie == "" || !hasUser[data[i].Cookie] {
@@ -484,12 +472,7 @@ func ApiErrPage(c *gin.Context) {
 			t2 += gap
 			count++
 		}
-		u, err := url.Parse(data[i].Pathname)
-		if err != nil {
-			log.Println("ApiErrPage: 解析出错", err)
-			continue
-		}
-		if u.Hostname() == path {
+		if data[i].Pathname == path {
 			c := Content{
 				TimeStamp: data[i].TimeStamp,
 				Duration:  data[i].Duration,
@@ -649,12 +632,7 @@ func SourceErrPage(c *gin.Context) {
 			t2 += gap
 			count++
 		}
-		u, err := url.Parse(data[i].URL)
-		if err != nil {
-			log.Println("SourceErrPage: 解析出错", err)
-			continue
-		}
-		if u.Path == path {
+		if data[i].URL == path {
 			errC++
 			y[count]++
 		}
@@ -807,12 +785,7 @@ func PerformancePage(c *gin.Context) {
 			t2 += gap
 			count++
 		}
-		u, err := url.Parse(data[i].URL)
-		if err != nil {
-			log.Println("PerformancePage: 解析出错", err)
-			continue
-		}
-		if u.Path == path {
+		if data[i].URL == path {
 			fRunder += data[i].AnalysisTime
 			yFMP[count] += data[i].AnalysisTime
 			yRunder[count] += data[i].AnalysisTime
