@@ -347,12 +347,7 @@ func AccessRank(c *gin.Context) {
 	m := make(map[string]int)
 	paths := make([]string, 0)
 	for i := 0; i < len(data); i++ {
-		u, err := url.Parse(data[i].URL)
-		if err != nil {
-			log.Println("AccessRank: 解析出错", err)
-			continue
-		}
-		path := u.Path
+		path := data[i].URL
 		if _, ok := m[path]; !ok {
 			paths = append(paths, path)
 		}
@@ -568,16 +563,11 @@ func ApiRank(c *gin.Context) {
 	m := make(map[string]int)
 	apis := make([]string, 0)
 	for i := 0; i < len(data); i++ {
-		u, err := url.Parse(data[i].Pathname)
-		if err != nil {
-			log.Println("AccessRank: 解析出错", err)
-			continue
+		api := data[i].Pathname
+		if _, ok := m[api]; !ok {
+			apis = append(apis, api)
 		}
-		host := u.Hostname()
-		if _, ok := m[host]; !ok {
-			apis = append(apis, host)
-		}
-		m[host]++
+		m[api]++
 	}
 	// 根据访问量从大到小排序
 	sort.Slice(apis, func(i, j int) bool {
