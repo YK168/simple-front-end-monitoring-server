@@ -52,12 +52,14 @@ func NewRouter() *gin.Engine {
 	}
 	get := r.Group("api/get")
 	{
-		get.Use(middleware.ParseURL)
+		get.Use(middleware.CheckProjectKey)
 
-		// 数据请求，返回用于echarts生成图表的x轴和y轴数组
 		get.GET("access/rank", api.AccessRank)
 		get.GET("api/rank", api.ApiRank)
 
+		get.Use(middleware.CheckTime)
+
+		// 数据请求，返回用于echarts生成图表的x轴和y轴数组
 		get.GET("jserror/total", api.JsErrTotal)
 		get.GET("access/total", api.AccessTotal)
 		get.GET("apierror/total", api.ApiErrTotal)
@@ -65,7 +67,7 @@ func NewRouter() *gin.Engine {
 		get.GET("performance/total", api.PerformanceTotal)
 
 		// 该中间件用于检查url中是否携带path参数
-		get.Use(middleware.ParseURLMore)
+		get.Use(middleware.CheckPath)
 
 		get.GET("jserror/page", api.JsErrPage)
 		get.GET("access/page", api.AccessPage)

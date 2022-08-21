@@ -38,14 +38,26 @@ func JWT(c *gin.Context) {
 }
 
 // 解析资源GET请求时参数和格式是否正确
-func ParseURL(c *gin.Context) {
+func CheckProjectKey(c *gin.Context) {
 	projectKey := c.Query("projectKey")
-	startTime := c.Query("startTime")
-	endTime := c.Query("endTime")
-	if projectKey == "" || startTime == "" || endTime == "" {
+	if projectKey == "" {
 		c.JSON(http.StatusBadRequest, utils.Response{
 			Status: http.StatusBadRequest,
-			Msg:    "projectKy或startTime或endTime参数为空",
+			Msg:    "projectKey参数为空",
+		})
+		c.Abort()
+		return
+	}
+	c.Next()
+}
+
+func CheckTime(c *gin.Context) {
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	if startTime == "" || endTime == "" {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status: http.StatusBadRequest,
+			Msg:    "startTime或endTime参数为空",
 		})
 		c.Abort()
 		return
@@ -63,7 +75,7 @@ func ParseURL(c *gin.Context) {
 	c.Next()
 }
 
-func ParseURLMore(c *gin.Context) {
+func CheckPath(c *gin.Context) {
 	path := c.Query("path")
 	if path == "" {
 		c.JSON(http.StatusBadRequest, utils.Response{

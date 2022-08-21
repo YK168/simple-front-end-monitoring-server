@@ -9,6 +9,7 @@ import (
 	"simple_front_end_monitoring_server/utils"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -325,10 +326,9 @@ func AccessPage(c *gin.Context) {
 
 func AccessRank(c *gin.Context) {
 	projectKey := c.Query("projectKey")
-	startTime := c.Query("startTime")
-	endTime := c.Query("endTime")
-	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
-	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 不限开始时间
+	startTimeStamp := int64(-1)
+	endTimeStamp := time.Now().Unix()
 	// 2. 查询数据
 	var searcher = &service.Searcher{
 		ProjectKey:     projectKey,
@@ -547,10 +547,9 @@ func ApiErrPage(c *gin.Context) {
 
 func ApiRank(c *gin.Context) {
 	projectKey := c.Query("projectKey")
-	startTime := c.Query("startTime")
-	endTime := c.Query("endTime")
-	startTimeStamp, _ := strconv.ParseInt(startTime, 10, 64)
-	endTimeStamp, _ := strconv.ParseInt(endTime, 10, 64)
+	// 不限开始时间
+	startTimeStamp := int64(-1)
+	endTimeStamp := time.Now().Unix()
 	// 2. 查询数据
 	var searcher = &service.Searcher{
 		ProjectKey:     projectKey,
