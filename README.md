@@ -15,14 +15,17 @@ go get -u github.com/gin-contrib/cors
 ```
 
 ### TODO List
-- [ ] 页面访问量排名
-- [ ] PV UV数据请求接口
+- [ ] 使用channel将上报逻辑改为异步批量插入数据库
+- [ ] 重新设计获取数据逻辑
+- [x] 返回数据根据时长处理X轴和Y轴
+- [x] X轴根据时间间隔生成
+- [x] 页面访问量排名
+- [x] PV UV数据请求接口
 - [x] JsError数据请求接口
 - [x] ApiError数据请求接口
-- [ ] SourceError数据请求接口
-- [ ] Performance数据请求接口
+- [x] SourceError数据请求接口
+- [x] Performance数据请求接口
 - [x] 资源GET请求参数解析中间件
-- [ ] 使用channel将上报逻辑改为异步批量插入数据库
 - [x] 生成测试数据脚本
 - [x] PV UV数据上报
 - [x] JWT中间件

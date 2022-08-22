@@ -37,14 +37,14 @@ type ApiErrorService struct {
 	Title string `form:"title" json:"title"`
 	// 报错时路由地址
 	URL     string `form:"url" json:"url"`
-	XhrInfo Xhr    `form:"xhr" json:"xhr"`
+	XhrInfo Xhr    `form:"xhrInfo" json:"xhrInfo"`
 }
 
 type Xhr struct {
 	// API请求耗时
 	Duration int `form:"duration" json:"duration"`
 	// API请求结果类型，error代表请求失败，load代表请求成功
-	EventType string `form:"eventType" json:"eventType"`
+	EventType string `form:"eventType" json:"eventType" binding:"required"`
 
 	Kind string `form:"kind" json:"kind"`
 	// POST请求的参数
