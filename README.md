@@ -12,6 +12,7 @@ go get -u github.com/gin-contrib/sessions/cookie
 go get -u github.com/dgrijalva/jwt-go
 go get -u github.com/gin-gonic/gin
 go get -u github.com/gin-contrib/cors
+go get -u github.com/golang-module/carbon/v2
 ```
 
 ### TODO List
