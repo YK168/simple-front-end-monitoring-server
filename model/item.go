@@ -116,3 +116,18 @@ type Access struct {
 	Cookie     string
 	ProjectKey string `gorm:"index; not null"`
 }
+
+type BlankError struct {
+	gorm.Model
+	// 项目名称
+	Title string
+	// 报错时路由地址
+	URL string
+	// 是否发生白屏错误
+	WhiteErr bool
+	// 报错时间
+	TimeStamp int64
+	// 根据Cookie来区分不同页面？
+	Cookie     string
+	ProjectKey string `gorm:"index; not null"`
+}

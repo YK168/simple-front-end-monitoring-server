@@ -117,6 +117,20 @@ type AccessService struct {
 	ProjectKey string `form:"projectKey" json:"projectKey"`
 }
 
+type BlankService struct {
+	// 项目名称
+	Title string `form:"title" json:"title"`
+	// 报错时路由地址
+	URL string `form:"url" json:"url"`
+	// 是否发生白屏错误
+	WhiteErr bool `form:"whiteError" json:"whiteError"`
+	// 报错时间
+	TimeStamp int64 `form:"timestamp" json:"timestamp"`
+	// 根据Cookie来区分不同页面？
+	Cookie     string `form:"cookie" json:"cookie"`
+	ProjectKey string `form:"projectKey" json:"projectKey"`
+}
+
 func (service *JsErrorService) Report() utils.Response {
 	jsErr := model.JSError{
 		Title:      service.Title,
@@ -258,5 +272,27 @@ func (service *AccessService) Report() utils.Response {
 	return utils.Response{
 		Status: http.StatusOK,
 		Msg:    "PV/UV监控记录添加成功",
+	}
+}
+
+func (service *BlankService) Report() utils.Response {
+	blankErr := model.BlankError{
+		Title:      service.Title,
+		URL:        service.URL,
+		WhiteErr:   service.WhiteErr,
+		TimeStamp:  service.TimeStamp,
+		Cookie:     service.Cookie,
+		ProjectKey: service.ProjectKey,
+	}
+	err := model.DB.Create(&blankErr).Error
+	if err != nil {
+		return utils.Response{
+			Status: http.StatusInternalServerError,
+			Msg:    "数据库操作失败，添加白屏Error监控记录失败",
+		}
+	}
+	return utils.Response{
+		Status: http.StatusOK,
+		Msg:    "白屏Error监控记录添加成功",
 	}
 }

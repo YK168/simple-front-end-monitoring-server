@@ -8,6 +8,7 @@ func migrate() {
 	err := DB.Set("gorm:table_options", "charset=utf8mb4").AutoMigrate(
 		&User{}, &Item{}, &JSError{}, &APIError{},
 		&SourceError{}, &Performance{}, &Access{},
+		&BlankError{},
 	)
 	if err != nil {
 		log.Fatalln("数据库迁移失败", err)

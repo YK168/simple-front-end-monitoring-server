@@ -49,6 +49,7 @@ func NewRouter() *gin.Engine {
 		reporter.POST("sourceerror", api.SourceErrReport)
 		reporter.POST("performance", api.PerformanceReport)
 		reporter.POST("access", api.AccessReport)
+		reporter.POST("blank", api.BlankErrReport)
 	}
 	get := r.Group("api/get")
 	{
@@ -74,6 +75,7 @@ func NewRouter() *gin.Engine {
 		get.GET("apierror/page", api.ApiErrPage)
 		get.GET("sourceerror/page", api.SourceErrPage)
 		get.GET("performance/page", api.PerformancePage)
+		get.GET("blank/page", api.BlankPage)
 	}
 	return r
 }

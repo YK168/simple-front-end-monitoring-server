@@ -61,15 +61,14 @@ func JsErrTotal(c *gin.Context) {
 		}
 		y[count]++
 	}
-	l, r := utils.GetBorder(y)
 	c.JSON(http.StatusOK, utils.Response{
 		Status: http.StatusOK,
 		Msg:    "查询JsError数据成功",
 		Data: JsErrData{
 			TotalErr: len(data),
 			Data: ChartData[int]{
-				X: x[l:r],
-				Y: y[l:r],
+				X: x,
+				Y: y,
 			},
 		},
 	})
