@@ -2,6 +2,8 @@ package utils
 
 import (
 	"time"
+
+	"github.com/golang-module/carbon/v2"
 )
 
 var (
@@ -26,9 +28,16 @@ func TimeInterval(startTime, endTime int64) ([]string, []int, int64) {
 		gap = HOUR
 		format = "15:04:05"
 	}
+	origin := startTime
+	j := 1
 	for startTime <= endTime {
 		x = append(x, time.Unix(startTime, 0).Format(format))
-		startTime += gap
+		if gap == MONTH {
+			startTime = carbon.CreateFromTimestamp(origin).StartOfMonth().AddMonths(j).Timestamp()
+			j++
+		} else {
+			startTime += gap
+		}
 	}
 	return x, make([]int, len(x)), gap
 }
