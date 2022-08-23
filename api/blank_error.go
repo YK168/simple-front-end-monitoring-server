@@ -33,9 +33,15 @@ func BlankPage(c *gin.Context) {
 	var data []model.BlankError
 	searcher.Search(&model.BlankError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "BlankPage: 查询Blank Error数据失败，该起始时间内没有数据",
+			Data: BlankData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}
@@ -67,9 +73,15 @@ func BlankPage(c *gin.Context) {
 		}
 	}
 	if pv == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "BlankPage: 该起始时间内没有" + path + "的Access记录，无法计算白屏率",
+			Data: BlankData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}

@@ -48,9 +48,24 @@ func ApiErrTotal(c *gin.Context) {
 	var data []model.APIError
 	searcher.Search(&model.APIError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "ApiErrTotal: 查询ApiErr数据失败，该起始时间内没有数据",
+			Data: ApiErrData{
+				SuccCnt: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				ErrCnt: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				SuccRate: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				List: []Content{},
+			},
 		})
 		return
 	}
@@ -123,9 +138,24 @@ func ApiErrPage(c *gin.Context) {
 	var data []model.APIError
 	searcher.Search(&model.APIError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "ApiErrPage: 查询ApiErr数据失败，该起始时间内没有数据",
+			Data: ApiErrData{
+				SuccCnt: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				ErrCnt: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				SuccRate: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				List: []Content{},
+			},
 		})
 		return
 	}
@@ -204,9 +234,10 @@ func ApiRank(c *gin.Context) {
 	var data []model.APIError
 	searcher.Search(&model.APIError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "ApiRank: 查询ApiErr数据失败，该起始时间内没有数据",
+			Data:   []string{},
 		})
 		return
 	}

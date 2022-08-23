@@ -15,12 +15,6 @@ type JsErrData struct {
 	Data     ChartData[int]
 }
 
-type SourceErrData struct {
-	Data ChartData[int]
-	// 请求错误数
-	TotalErr int
-}
-
 type ChartData[T int | float32] struct {
 	X []string
 	Y []T
@@ -43,9 +37,15 @@ func JsErrTotal(c *gin.Context) {
 	var data []model.JSError
 	searcher.Search(&model.JSError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "查询JsError数据失败，该起始时间内没有数据",
+			Data: JsErrData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}
@@ -92,9 +92,15 @@ func JsErrPage(c *gin.Context) {
 	var data []model.JSError
 	searcher.Search(&model.JSError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "查询JsError数据失败，该起始时间内没有数据",
+			Data: JsErrData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}

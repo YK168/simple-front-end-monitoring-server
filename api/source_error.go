@@ -10,6 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type SourceErrData struct {
+	Data ChartData[int]
+	// 请求错误数
+	TotalErr int
+}
+
 func SourceErrTotal(c *gin.Context) {
 	// 1. 解析校验参数
 	// 中间件Parse已经提前解析过参数了，所以这里的查询和转换并不会出错
@@ -27,9 +33,15 @@ func SourceErrTotal(c *gin.Context) {
 	var data []model.SourceError
 	searcher.Search(&model.SourceError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "SourceErrTotal: 查询SourceErr数据失败，该起始时间内没有数据",
+			Data: SourceErrData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}
@@ -60,9 +72,15 @@ func SourceErrPage(c *gin.Context) {
 	var data []model.SourceError
 	searcher.Search(&model.SourceError{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "SourceErrPage: 查询SourceErr数据失败，该起始时间内没有数据",
+			Data: SourceErrData{
+				Data: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}

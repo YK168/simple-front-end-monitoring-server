@@ -36,9 +36,19 @@ func AccessTotal(c *gin.Context) {
 	var data []model.Access
 	searcher.Search(&model.Access{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "TotleAccessGet: 查询Access数据失败，该起始时间内没有数据",
+			Data: AccessData{
+				PVData: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				UVData: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}
@@ -105,9 +115,19 @@ func AccessPage(c *gin.Context) {
 	var data []model.Access
 	searcher.Search(&model.Access{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "AccessPage: 查询Access数据失败，该起始时间内没有数据",
+			Data: AccessData{
+				PVData: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+				UVData: ChartData[int]{
+					X: []string{},
+					Y: []int{},
+				},
+			},
 		})
 		return
 	}
@@ -172,9 +192,10 @@ func AccessRank(c *gin.Context) {
 	var data []model.Access
 	searcher.Search(&model.Access{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "AccessRank: 查询Access数据失败，该起始时间内没有数据",
+			Data:   []string{},
 		})
 		return
 	}

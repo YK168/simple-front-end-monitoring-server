@@ -44,9 +44,35 @@ func PerformanceTotal(c *gin.Context) {
 	var data []model.Performance
 	searcher.Search(&model.Performance{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "PerformanceTotal: 查询Performance数据失败，该起始时间内没有数据",
+			Data: PerformanceData{
+				FMPTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				RunderTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				InteractableTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				DomReadyTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				LoadCompleteTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				BlankTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+			},
 		})
 		return
 	}
@@ -127,9 +153,35 @@ func PerformancePage(c *gin.Context) {
 	var data []model.Performance
 	searcher.Search(&model.Performance{}, &data)
 	if len(data) == 0 {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status: http.StatusBadRequest,
+		c.JSON(http.StatusOK, utils.Response{
+			Status: http.StatusOK,
 			Msg:    "PerformancePage: 查询Performance数据失败，该起始时间内没有数据",
+			Data: PerformanceData{
+				FMPTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				RunderTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				InteractableTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				DomReadyTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				LoadCompleteTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+				BlankTime: ChartData[float32]{
+					X: []string{},
+					Y: []float32{},
+				},
+			},
 		})
 		return
 	}
